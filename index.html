@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeQuest | 程式冒險決策器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
+        body { font-family: 'Fira Code', monospace; background-color: #0d1117; color: #58a6ff; }
+        .scanline { width: 100%; height: 2px; background: rgba(88, 166, 255, 0.1); position: fixed; top: 0; z-index: 10; pointer-events: none; animation: move 4s linear infinite; }
+        @keyframes move { from { top: 0; } to { top: 100%; } }
+        .glitch:hover { text-shadow: 2px 0 #ff00c1, -2px 0 #00fff9; }
+    </style>
+</head>
+<body class="p-8 flex flex-col items-center min-h-screen">
+    <div class="scanline"></div>
+    
+    <header class="mb-10 text-center">
+        <h1 class="text-4xl font-bold glitch mb-2 tracking-widest text-white">CODE QUEST v1.0</h1>
+        <p class="text-gray-500">系統狀態：等待同步環境參數...</p>
+    </header>
+
+    <main class="w-full max-w-md bg-gray-900 p-6 rounded-lg border border-blue-900 shadow-2xl">
+        <div id="setup-form" class="space-y-6">
+            <div>
+                <label class="block mb-2">☁️ 當前天氣環境：</label>
+                <select id="weather" class="w-full bg-black p-2 border border-blue-500 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="sunny">陽光普照 (適合輕量任務)</option>
+                    <option value="rainy">陰雨綿綿 (深度思考模式)</option>
+                    <option value="night">寂靜深夜 (魔法開發時間)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block mb-2">🔋 能量水平：</label>
+                <div class="flex gap-2">
+                    <button onclick="setMood(1)" class="mood-btn border border-blue-800 flex-1 py-2 hover:bg-blue-900">10% (想躺平)</button>
+                    <button onclick="setMood(2)" class="mood-btn border border-blue-800 flex-1 py-2 hover:bg-blue-900">50% (適中)</button>
+                    <button onclick="setMood(3)" class="mood-btn border border-blue-800 flex-1 py-2 hover:bg-blue-900">100% (極客模式)</button>
+                </div>
+            </div>
+
+            <button onclick="generateMission()" class="w-full py-4 mt-4 bg-blue-600 text-white font-bold hover:bg-blue-400 transition-all rounded shadow-lg">
+                連結神經網路並分析任務...
+            </button>
+        </div>
+
+        <div id="result-screen" class="hidden">
+            <div id="typing-text" class="text-green-400 leading-relaxed min-h-[150px]"></div>
+            <button onclick="location.reload()" class="mt-6 text-sm text-gray-500 underline">重新同步...</button>
+        </div>
+    </main>
+
+    <script>
+        let selectedMood = 2;
+        function setMood(m) {
+            selectedMood = m;
+            document.querySelectorAll('.mood-btn').forEach((b, i) => {
+                b.style.background = (i+1 === m) ? '#1e40af' : 'transparent';
+            });
+        }
+
+        const missions = {
+            sunny: {
+                1: "「修剪草坪任務」：優化你舊項目的一個 CSS 或 README，隨便改改就好。",
+                2: "「漫步者」：嘗試一個從沒用過的 API，隨便串接點有趣的數據。",
+                3: "「光合作用」：去咖啡廳寫一個簡單的 CLI 工具，解決你生活的小煩惱。"
+            },
+            rainy: {
+                1: "「雨聲白噪音」：重構那段你一直看不順眼的混亂代碼，安靜地整理它。",
+                2: "「邏輯密室」：刷一題難度適中的 LeetCode，專注於演算法優化。",
+                3: "「風暴核心」：開啟一個複雜的新項目框架，今天適合架設基礎架構。"
+            },
+            night: {
+                1: "「賽博廢物」：寫一段只會生成隨機表情符號的代碼，然後睡覺。",
+                2: "「暗網偵探」：研究一個底層原理（如垃圾回收機制），不寫 code 只讀書。",
+                3: "「午夜駭客」：這不是練習，是戰爭！開發一個自動化腳本或深色的 Dashboard。"
+            }
+        };
+
+        function generateMission() {
+            const weather = document.getElementById('weather').value;
+            const mission = missions[weather][selectedMood];
+            
+            document.getElementById('setup-form').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            
+            let i = 0;
+            const text = `> 正在讀取環境數據...\n> 當前能量：${selectedMood * 33}%\n> 分析成功。\n\n【今日任務：${mission}】`;
+            
+            function typeWriter() {
+                if (i < text.length) {
+                    document.getElementById('typing-text').innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 40);
+                }
+            }
+            typeWriter();
+        }
+    </script>
+</body>
+</html>
